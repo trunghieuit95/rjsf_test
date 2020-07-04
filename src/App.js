@@ -239,26 +239,25 @@ function ArrayFieldTemplate(props) {
   if(props.schema.level===1){
     // console.log(props);
   }
-  const [arr1,setArr1] = useState([]);
-  const [numberItem,setNumberItem] = useState([]);
+  const [statusList,setStatusList] = useState([]);
+  const [numberItem,setNumberItem] = useState(0);
 
   useEffect(() => {
     if(props.items.length > 0){
       if(props.items.length > numberItem){// add
         console.log('add item');
         let x = {display:true};
-        x.data = props.items[props.items.length-1];
-        let newData = arr1;
+        // x.data = props.items[props.items.length-1];
+        let newStatus = statusList;
         // an cac phan tu dang hien
         if(props.items.length > 1){
-          for(let i=0;i<props.items.length-1;i++){
-            newData[i].display = false;
+          for(let i=0;i<statusList.length;i++){
+            newStatus[i].display = false;
           }
         }
-        newData.push(x);
-        console.log(newData);
-        setArr1(newData);
-        console.log(arr1);
+        newStatus.push(x);
+        console.log(newStatus);
+        setStatusList(newStatus);
       } else if(props.items.length < numberItem){// remove
         console.log('delete item');
       }
@@ -269,12 +268,14 @@ function ArrayFieldTemplate(props) {
   return (
     <div className={props.className}>
       <h2>{props.schema.title}</h2>
-      {arr1 &&
-        arr1.map(element => (
-          <div key={element.data.key} className={element.data.className}>
+      {props.items &&
+        props.items.map((element,index) => (
+          <div key={element.key} className={element.className}>
             {
-              element.display ? <div>{element.data.children}</div> : <div>đã ẩn</div>
+              statusList[index] && statusList[index].display ? <div>{element.children}</div> : <div>đã ẩn</div>
             }
+            <h1>{index + ' : ' + JSON.stringify(statusList[index])}</h1>
+            {/* <div>{element.children}</div> */}
             {/* {element.hasMoveDown && (
               <button
                 onClick={element.onReorderClick(
@@ -293,20 +294,12 @@ function ArrayFieldTemplate(props) {
                 Up
               </button>
             )} */}
-            <button onClick={element.data.onDropIndexClick(element.data.index)}>
+            {/* <button onClick={element.data.onDropIndexClick(element.data.index)}>
               Delete
+            </button> */}
+            <button type="button" onClick={element.onDropIndexClick(element.index)}>
+              <span onClick={() => console.log(element.index)}>Delete</span>
             </button>
-            {/* <a onClick={() => {
-              console.log(element.index);
-              console.log(element);
-              // let x = [];
-              // x.push(element);
-              // setArr1(x);
-              element.onDropIndexClick(element.index);
-              // console.log(arr1);
-            }}>
-              Hide
-            </a> */}
             <hr />
           </div>
         ))}
@@ -314,7 +307,7 @@ function ArrayFieldTemplate(props) {
       {props.canAdd && (
         <div className="row">
           <p className="col-xs-3 col-xs-offset-9 array-item-add text-right">
-            <button onClick={props.onAddClick} type="button">
+            <button onClick={(e) => props.onAddClick(e)} type="button">
               Custom +
             </button>
           </p>
